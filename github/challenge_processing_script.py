@@ -76,7 +76,7 @@ if __name__ == "__main__":
 			print(error_message)
 			os.environ["CHALLENGE_ERRORS"] = error_message
 		else:
-			error_message = "\nFollowing errors occurred while validating the challenge config: {}".format(e)
+			error_message = "\nFollowing errors occurred while processing the challenge config: {}".format(e)
 			print(error_message)
 			os.environ["CHALLENGE_ERRORS"] = error_message
 
