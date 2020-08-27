@@ -3,6 +3,7 @@ import os
 import sys
 import zipfile
 
+from config import *
 from github import Github
 
 
