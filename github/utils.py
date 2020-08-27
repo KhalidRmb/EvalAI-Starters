@@ -45,7 +45,7 @@ def add_pull_request_comment(github_auth_token, repo_name, pr_number, comment_bo
     try:
         client = Github(github_auth_token)
         repo = client.get_user().get_repo(repo_name)
-        pull = repo.get_pull(pull_request_number)
+        pull = repo.get_pull(pr_number)
         pull.create_issue_comment(comment_body)
     except Exception as e:
         print("There was an error while commenting on the Pull request: {}".format(e))
