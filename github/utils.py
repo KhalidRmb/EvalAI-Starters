@@ -12,7 +12,7 @@ def check_for_errors():
     """
     if os.getenv("CHALLENGE_ERRORS") == "False":
         return True, None
-    else return False, os.getenv("CHALLENGE_ERRORS")
+    return False, os.getenv("CHALLENGE_ERRORS")
 
 
 def check_if_pull_request():
