@@ -19,12 +19,16 @@ from utils import (
 
 sys.dont_write_bytecode = True
 
+GITHUB_CONTEXT = json.loads(os.getenv("GITHUB_CONTEXT"))
+
+GITHUB_AUTH_TOKEN = os.getenv("GITHUB_AUTH_TOKEN")
+if not GITHUB_AUTH_TOKEN:
+	print("Please add your github access token to the repository secrets with the name AUTH_TOKEN")
+	sys.exit(1)
+
 HOST_AUTH_TOKEN = None
 CHALLENGE_HOST_TEAM_PK = None
 EVALAI_HOST_URL = None
-
-GITHUB_CONTEXT = json.loads(os.getenv("GITHUB_CONTEXT"))
-GITHUB_AUTH_TOKEN = os.getenv("GITHUB_AUTH_TOKEN")
 
 
 if __name__ == "__main__":
