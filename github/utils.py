@@ -99,7 +99,6 @@ def create_challenge_zip_file(challenge_zip_file_path, ignore_dirs, ignore_files
                 if file not in ignore_files:
                     file_name = os.path.join(root, file)
                     name_in_zip_file = file_name[len(working_dir)+1:] if file_name.startswith(working_dir) else file_name
-                    print(">>>>>> Challenge zipping Inside zipfile: {}".format(name_in_zip_file))
                     zipf.write(file_name, name_in_zip_file)
     zipf.close()
 
