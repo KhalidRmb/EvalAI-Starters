@@ -6,17 +6,60 @@ import zipfile
 from github import Github
 
 
-def comment_on_pr(github_auth_token, repo_name, pr_number, message):
+def check_for_errors():
+    """
+    Checks if any errors have been recorded so far during this workflow step and returns the error if so
+    """
+    if os.getenv("CHALLENGE_ERRORS") == "False":
+        return True, None
+    else return False, os.getenv("CHALLENGE_ERRORS")
+
+
+def check_if_pull_request():
+    """
+    Returns True if the workflow triggering event is a pull request
+    """
+    if GITHUB_EVENT_NAME == "pull_request":
+        return True
+    return False
+
+def check_if_merge_or_commit():
+    """
+    Returns True if the workflow triggering event is either a merge or a direct commit
+    """
+    if GITHUB_EVENT_NAME == "push":
+        return True
+    return False
+
+def add_pull_request_comment(github_auth_token, repo_name, pr_number, comment_body):
+    """
+    Adds a comment to a pull request
+
+    Arguments:
+        github_auth_token {str}: The auth token of the github user
+        repo_name {str}: The name of the repository
+        pr_number {int}: The Pull request number to add a comment
+        comment_body {str}: The body of the comment
+    """
     try:
         client = Github(github_auth_token)
         repo = client.get_user().get_repo(repo_name)
         pull = repo.get_pull(pull_request_number)
-        pull.create_issue_comment(message)
+        pull.create_issue_comment(comment_body)
     except Exception as e:
         print("There was an error while commenting on the Pull request: {}".format(e))
 
 
-def create_issue_in_repo(github_auth_token, repo_name, issue_title, issue_body):
+def create_github_repository_issue(github_auth_token, repo_name, issue_title, issue_body):
+    """
+    Creates an issue in a given repository
+    
+    Arguments:
+        github_auth_token {str}: The auth token of the github user
+        repo_name {str}: The name of the repository
+        issue_title {int}: The title of the issue to be created
+        issue_body {str}: The body of the issue to be created
+    """
     try:
         client = Github(github_auth_token)
         repo = client.get_user().get_repo(repo_name)
@@ -25,9 +68,14 @@ def create_issue_in_repo(github_auth_token, repo_name, issue_title, issue_body):
         print("There was an error while creating an issue: {}".format(e))
 
 
-def construct_challenge_zip_file(challenge_zip_file_path, ignore_dirs, ignore_files):
+def create_challenge_zip_file(challenge_zip_file_path, ignore_dirs, ignore_files):
     """
-    Constructs the challenge zip file at a given path
+    Creates the challenge zip file at a given path
+    
+    Arguments:
+        challenge_zip_file_path {str}: The relative path of the created zip file
+        ignore_dirs {list}: The list of directories to exclude from the zip file
+        ignore_files {list}: The list of files to exclude from the zip file
     """
     working_dir = os.getcwd() # Special case for github. For local. use os.path.dirname(os.getcwd())
     
@@ -58,6 +106,9 @@ def construct_challenge_zip_file(challenge_zip_file_path, ignore_dirs, ignore_fi
 def get_request_header(token):
     """
     Returns user auth token formatted in header for sending requests
+    
+    Arguments:
+        token {str}: The user token to gain access to EvalAI
     """
     header = {"Authorization": "Token {}".format(token)}
     return header
@@ -66,6 +117,9 @@ def get_request_header(token):
 def load_host_configs(config_path):
     """
     Loads token to be used for sending requests
+    
+    Arguments:
+        config_path {str}: The path of host configs having the user token, team id and the EvalAI host url
     """
     config_path = "{}/{}".format(os.getcwd(), config_path)
     if os.path.exists(config_path):
@@ -89,7 +143,10 @@ def load_host_configs(config_path):
 
 def validate_token(response):
     """
-    Function to check if the authentication token provided by user is valid or not.
+    Function to check if the authentication token provided by user is valid or not
+    
+    Arguments:
+        response {dict}: The response json dict sent back from EvalAI 
     """
     error = None
     if "detail" in response:
